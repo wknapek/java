@@ -1,7 +1,6 @@
 
-import javax.naming.spi.DirStateFactory.Result;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.notification.Failure;
+import java.util.ArrayList;
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -21,10 +20,19 @@ public class test {
      */
     public static void main(String[] args) 
     {
-        //reversi test = new reversi();
-        //test.test();
-        //FillBaseImplementation test = new FillBaseImplementation();
-            
+                OtelloHelperInterface.Disk[][] testTab = 
+                           {{null      ,null      ,null      ,null      ,null      ,null      ,null       ,null}, //0
+                            {null      ,null      ,null      ,null      ,null      ,null      ,null       ,null}, //1
+                            {null      ,null      ,null      ,null      ,null      ,OtelloHelperInterface.Disk.BLACK,null       ,null}, //2
+                            {null      ,null      ,null      ,OtelloHelperInterface.Disk.BLACK,OtelloHelperInterface.Disk.BLACK,null      ,null       ,null}, //3
+                            {null,      OtelloHelperInterface.Disk.WHITE,OtelloHelperInterface.Disk.WHITE,OtelloHelperInterface.Disk.WHITE,OtelloHelperInterface.Disk.WHITE,null      ,null       ,null}, //4
+                            {null,      null,      null,      null      ,OtelloHelperInterface.Disk.WHITE,null      ,null       ,null}, //5
+                            {null,      null,      null,      null      ,null      ,null      ,null       ,null}, //6
+                            {null,      null,      null,      null      ,null      ,null      ,null       ,null}, //7
+                                                                                                               };
+                          //  1          2          3          4          5          6          7           8
+       reversi rev = new reversi();
+        OtelloHelperInterface.Position[] test = rev.analyze(testTab, OtelloHelperInterface.Disk.BLACK);
     }
 }
 
