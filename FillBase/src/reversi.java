@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Collections;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -13,8 +12,8 @@ import java.util.Collections;
  */
 class reversi implements OtelloHelperInterface
 {
-    private int[] MOVE_ROW = {-1, -1, -1, 0, 0, 1, 1, 1};
-    private int[] MOVE_COL = {-1, 0, 1, -1, 1, -1, 0, 1};
+    private int[] move_hor = {-1, -1, -1, 0, 0, 1, 1, 1};
+    private int[] move_ver = {-1, 0, 1, -1, 1, -1, 0, 1};
     class retrev
     {
         boolean validate = false;
@@ -22,9 +21,9 @@ class reversi implements OtelloHelperInterface
     }
     class myPoint
     {
-        Position position;
+        OtelloHelperInterface.Position position;
         int count;
-        public myPoint(int icount, Position pos )
+        public myPoint(int icount, OtelloHelperInterface.Position pos )
         {
             count = icount;
             position = pos;
@@ -38,11 +37,23 @@ class reversi implements OtelloHelperInterface
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
+
     ////////////////////////////////////////////////////
     @Override
     public Position[] analyze(Disk[][] board, Disk playerDisk)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //Position[] list;
+        //list = new Position[];
+        ArrayList<myPoint> array = findValidMove(board, playerDisk);
+        int listsize = array.size();
+        bubbleSort(array);
+        Position[] list = new Position[listsize];
+        for(int i =0; i < listsize; i++)
+        {
+            list[i] = array.get(i).position;
+        }
+        
+        return list;
     }
     
     retrev isValidMove(Disk[][] board, Disk check, int row, int col) 
@@ -52,8 +63,8 @@ class reversi implements OtelloHelperInterface
         // check 8 directions
         for (int i = 0; i < 8; ++i) 
         {
-            int curRow = row + MOVE_ROW[i];
-            int curCol = col + MOVE_COL[i];
+            int curRow = row + move_hor[i];
+            int curCol = col + move_ver[i];
             boolean hasOppPieceBetween = false;
             int tocheck = 0;
             while (curRow >=0 && curRow < 8 && curCol >= 0 && curCol < 8) 
@@ -76,8 +87,8 @@ class reversi implements OtelloHelperInterface
                 else
                     break;
 
-                curRow += MOVE_ROW[i];
-                curCol += MOVE_COL[i];
+                curRow += move_hor[i];
+                curCol += move_ver[i];
             }
             if (ret.validate)
                 break;
@@ -132,17 +143,6 @@ class reversi implements OtelloHelperInterface
     /// to test
     void test()
     {
-        Disk[][] testTab = {{null      ,null      ,null      ,null      ,null      ,null      ,null       ,null}, //0
-                            {null      ,null      ,null      ,null      ,null      ,null      ,null       ,null}, //1
-                            {null      ,null      ,null      ,null      ,null      ,Disk.BLACK,null       ,null}, //2
-                            {null      ,null      ,null      ,Disk.BLACK,Disk.BLACK,null      ,null       ,null}, //3
-                            {null,      Disk.WHITE,Disk.WHITE,Disk.WHITE,Disk.WHITE,null      ,null       ,null}, //4
-                            {null,      null,      null,      null      ,Disk.WHITE,null      ,null       ,null}, //5
-                            {null,      null,      null,      null      ,null      ,null      ,null       ,null}, //6
-                            {null,      null,      null,      null      ,null      ,null      ,null       ,null}, //7
-                                                                                                               };
-                          //  1          2          3          4          5          6          7           8
-       ArrayList<myPoint> test = findValidMove(testTab, OtelloHelperInterface.Disk.BLACK);
-       test = bubbleSort(test);
+
     }
 }
