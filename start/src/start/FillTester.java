@@ -1,3 +1,5 @@
+package start;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -116,7 +118,6 @@ public class FillTester {
 		boolean[][] ngbrs = new boolean[3][3];
 		ngbrs[0][1] = true;
 		ngbrs[2][1] = true;
-
 		runFill(img, ngbrs, new int[] {}, 1, 2, 2);
 
 		assertEquals(

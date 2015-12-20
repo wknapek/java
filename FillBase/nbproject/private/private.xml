@@ -5,7 +5,7 @@
             <url>src/FillTester.java</url>
             <bookmark id="1">
                 <name/>
-                <line>80</line>
+                <line>82</line>
                 <key/>
             </bookmark>
         </file>
@@ -14,8 +14,6 @@
         <group>
             <file>file:/home/raven/NetBeansProjects/FillBase/src/OtelloHelperInterface.java</file>
             <file>file:/home/raven/NetBeansProjects/FillBase/src/reversi.java</file>
-            <file>file:/home/raven/NetBeansProjects/FillBase/src/FillBase.java</file>
-            <file>file:/home/raven/NetBeansProjects/FillBase/src/FillTester.java</file>
             <file>file:/home/raven/NetBeansProjects/FillBase/src/test.java</file>
         </group>
     </open-files>

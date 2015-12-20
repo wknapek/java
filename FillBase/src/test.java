@@ -21,8 +21,9 @@ public class test {
      */
     public static void main(String[] args) 
     {
-        reversi test = new reversi();
-        test.test();
+        //reversi test = new reversi();
+        //test.test();
+        //FillBaseImplementation test = new FillBaseImplementation();
             
     }
 }
