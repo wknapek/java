@@ -17,7 +17,7 @@ public class game implements ReversiBoardInterface
 {
     private int[] move_hor = {-1, -1, -1, 0, 0, 1, 1, 1};
     private int[] move_ver = {-1, 0, 1, -1, 1, -1, 0, 1};
-    private Disk[][] myBoard;
+    private Disk myBoard[][] = new Disk[8][8];
     private Disk myNextPlayer;
     class retrev
     {
@@ -192,21 +192,22 @@ public class game implements ReversiBoardInterface
     public int move(Position pos) throws IllegalMove 
     {
         int ret =0;
-        try 
-        {
-            retrev validMove = isValidMove(myBoard, nextPlayer(), pos.getIndex1(), pos.getIndex1());
+        retrev validMove;
+        try {
+            validMove = isValidMove(myBoard, nextPlayer(), pos.getIndex1(), pos.getIndex2());
             if(!validMove.validate)
-            {
-                throw new IllegalMove();
-            }
-        } catch (CanNotContinue ex) {
-            throw new IllegalMove();
+                {
+                    throw new IllegalMove();
+                }
+        } 
+        catch (CanNotContinue ex) 
+        {
         }
         try {
             ArrayList<myPoint> array = findValidMove(myBoard, nextPlayer());
             for(int i =0; i < array.size(); i++)
             {
-                if(array.get(i).position == pos)
+                if(array.get(i).position.getIndex1() == pos.getIndex1() && array.get(i).position.getIndex2() == pos.getIndex2())
                 {
                     ret = array.get(i).count;
                 }
