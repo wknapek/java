@@ -43,7 +43,7 @@ class ReversiBoard implements ReversiBoardInterface
         }
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    retrev isValidMove(ReversiBoardInterface.Disk[][] board, ReversiBoardInterface.Disk check, int row, int col) 
+        retrev isValidMove(ReversiBoardInterface.Disk[][] board, ReversiBoardInterface.Disk check, int row, int col) 
     {
         retrev ret = new retrev();
         ReversiBoardInterface.Disk oppDisk = (check == ReversiBoardInterface.Disk.BLACK) ? ReversiBoardInterface.Disk.WHITE : ReversiBoardInterface.Disk.BLACK;
