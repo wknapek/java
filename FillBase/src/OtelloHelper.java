@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author raven
  */
-class reversi implements OtelloHelperInterface
+class OtelloHelper implements OtelloHelperInterface
 {
     private int[] move_hor = {-1, -1, -1, 0, 0, 1, 1, 1};
     private int[] move_ver = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -80,7 +80,10 @@ class reversi implements OtelloHelperInterface
                     if(board[row][col] == null)
                     {
                         ret.validate = true;
-                        ret.hints = tocheck;
+                        if(tocheck > ret.hints)
+                        {
+                            ret.hints = tocheck;
+                        }
                         break;
                     }
                 }
@@ -90,8 +93,8 @@ class reversi implements OtelloHelperInterface
                 curRow += move_hor[i];
                 curCol += move_ver[i];
             }
-            if (ret.validate)
-                break;
+            //if (ret.validate)
+            //    break;
         }
 
         return ret;
@@ -109,7 +112,7 @@ class reversi implements OtelloHelperInterface
             for (int j = 0; j < 8; ++j) 
             {
                 retrev isValid = isValidMove(board,playerDisk, i, j);
-                if (isValid.validate)
+                if (isValid.validate && isValid.hints > 0)
                 {
                     myPoint tmp = new myPoint(isValid.hints, new Position(i, j));
                     moveMap.add(tmp);
