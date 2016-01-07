@@ -14,6 +14,7 @@ class OtelloHelper implements OtelloHelperInterface
 {
     private int[] move_hor = {-1, -1, -1, 0, 0, 1, 1, 1};
     private int[] move_ver = {-1, 0, 1, -1, 1, -1, 0, 1};
+    
     class retrev
     {
         boolean validate = false;
@@ -44,10 +45,15 @@ class OtelloHelper implements OtelloHelperInterface
     {
         //Position[] list;
         //list = new Position[];
+        Disk oppDisk = (playerDisk == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
         ArrayList<myPoint> array = findValidMove(board, playerDisk);
         int listsize = array.size();
-        bubbleSort(array);
         Position[] list = new Position[listsize];
+        for (int i=0; i < array.size(); ++i) 
+        {
+            array.get(i).count = findPoints(board, array.get(i).position.getIndex1(), array.get(i).position.getIndex2(), playerDisk);
+        }
+        bubbleSort(array);
         for(int i =0; i < listsize; i++)
         {
             list[i] = array.get(i).position;
@@ -73,17 +79,12 @@ class OtelloHelper implements OtelloHelperInterface
                 if (board[curRow][curCol] == oppDisk)
                 {
                     hasOppPieceBetween = true;
-                    tocheck++;
                 }
                 else if ((board[curRow][curCol] == check) && hasOppPieceBetween)
                 {
                     if(board[row][col] == null)
                     {
                         ret.validate = true;
-                        if(tocheck > ret.hints)
-                        {
-                            ret.hints = tocheck;
-                        }
                         break;
                     }
                 }
@@ -93,8 +94,8 @@ class OtelloHelper implements OtelloHelperInterface
                 curRow += move_hor[i];
                 curCol += move_ver[i];
             }
-            //if (ret.validate)
-            //    break;
+            if (ret.validate)
+                break;
         }
 
         return ret;
@@ -112,7 +113,7 @@ class OtelloHelper implements OtelloHelperInterface
             for (int j = 0; j < 8; ++j) 
             {
                 retrev isValid = isValidMove(board,playerDisk, i, j);
-                if (isValid.validate && isValid.hints > 0)
+                if (isValid.validate )
                 {
                     myPoint tmp = new myPoint(isValid.hints, new Position(i, j));
                     moveMap.add(tmp);
@@ -122,6 +123,7 @@ class OtelloHelper implements OtelloHelperInterface
         }
        return moveMap;
     }
+    
     public ArrayList<myPoint> bubbleSort(ArrayList<myPoint> a) 
     {
         for (int i = 0; i < a.size()-1; i++) {
@@ -142,7 +144,309 @@ class OtelloHelper implements OtelloHelperInterface
         }
         return a;
     }
-
+    
+    int findPoints(Disk[][] board ,int row, int col, Disk player)
+    {
+        Disk oppDisk = (player == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
+        int points =0;
+        board[row][col] = player;
+        points =  findHori(board, row, col, player);
+        points += findVert(board, row, col, player);
+        points += findDiag(board, row, col, player);
+        board[row][col] = null;
+        return points;
+    }
+    
+    int findVert(Disk[][] board, int row, int col, Disk player)
+    {
+        Disk oppDisk = (player == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
+        int points = 0;
+        int nullcount = 0; 
+        boolean border = false;
+        for(int i = row; i<8; i++)
+        {
+            if(board[i][col] == oppDisk)
+            {
+                points++;
+            }
+            if(board[i][col] == null)
+            {
+                nullcount++;
+            }
+            if(board[i][col] == player)
+            {
+                if(i!=row)
+                {
+                    border = true;
+                    break;
+                }
+            }
+        }
+        for(int i = row; i>-1; i--)
+        {
+            if(board[i][col] == oppDisk)
+            {
+                points++;
+            }
+            if(board[i][col] == null)
+            {
+                nullcount++;
+            }
+            if(board[i][col] == player)
+            {
+                if(i!=row)
+                {
+                    border = true;
+                    break;
+                }
+            }
+        }
+        if(border)
+        {
+            return points;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    int findHori(Disk[][] board, int row, int col, Disk player)
+    {
+        Disk oppDisk = (player == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
+        int points =0;
+        int nullcount = 0;
+        boolean border =false;
+        for(int i = col; i<8; i++)
+        {
+            if(board[row][i] == oppDisk)
+            {
+                points++;
+            }
+            if(board[row][i] == null)
+            {
+                nullcount++;
+            }
+            if(board[row][i]  == player)
+            {
+                if(i != col)
+                {
+                    border = true;
+                    break;
+                }
+            }
+        }
+        for(int i = col; i>-1; i--)
+        {
+            if(board[row][i]  == oppDisk)
+            {
+                points++;
+            }
+            if(board[row][i]  == null)
+            {
+                nullcount++;
+            }
+            if(board[row][i] == player)
+            {
+                if(i != col)
+                {
+                    border =  true;
+                    break;
+                }
+            }
+        }
+        if(border)
+        {
+            return points;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    int findDiag(Disk[][] board, int row, int col, Disk player)
+    {
+        Disk oppDisk = (player == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
+        int points =0;
+        int tmpPoints = 0;
+        int nullcount =0;
+        boolean border = false;
+        for(int i = 0; i < 8; i++)
+        {
+            if(row + i < 8 && col + i < 8)
+            {
+                if(board[row + i][col + i] == oppDisk)
+                {
+                    points++;
+                }
+                if(board[row + i][col + i] == player)
+                {
+                    
+                    if(i!=0)
+                    {
+                        border = true;
+                        break;
+                    }
+                }
+                if(board[row + i][col + i] == null)
+                {
+                    nullcount++;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+        if(!border && nullcount > 0)
+        {
+            border = false;
+            points = 0;
+            nullcount =0;
+        }
+        else
+        {
+            border = false;
+            if(nullcount==0)
+            {
+                tmpPoints += points; 
+            }
+            points = 0;
+        }
+        for(int i = 0; i < 8; i++)
+        {
+            if(row - i > -1 && col - i > -1)
+            {
+                if(board[row - i][col - i] == oppDisk)
+                {
+                    points++;
+                }
+                if(board[row - i][col - i] == player)
+                {
+                    if(i!=0)
+                    {
+                        border = true;
+                        break;
+                    }
+                }
+                if(board[row - i][col - i] == null)
+                {
+                    nullcount++;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+        if(!border && nullcount > 0)
+        {
+            border = false;
+            points = 0;
+            nullcount =0;
+        }
+        else
+        {
+            border = false;
+            if(nullcount==0)
+            {
+                tmpPoints += points; 
+            }
+            points = 0;
+        }
+        for(int i = 0; i < 8; i++)
+        {
+            if(row - i > -1 && col + i < 8)
+            {
+                if(board[row - i][col + i] == oppDisk)
+                {
+                    points++;
+                }
+                if(board[row - i][col + i] == player)
+                {
+                    if(i!=0)
+                    {
+                        border = true;
+                        break;
+                    }
+                }
+                if(board[row - i][col + i] == null)
+                {
+                    nullcount++;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+        if(!border && nullcount > 0)
+        {
+            border = false;
+            points = 0;
+            nullcount =0;
+        }
+        else
+        {
+            border = false;
+            if(nullcount==0)
+            {
+                tmpPoints += points; 
+            }
+            points = 0;
+        }
+        for(int i = 0; i < 8; i++)
+        {
+            if(row + i < 8 && col - i > -1)
+            {
+                if(board[row + i][col - i] == oppDisk)
+                {
+                    points++;
+                }
+                if(board[row + i][col - i] == player)
+                {
+                    if(i!=0)
+                    {
+                        border = true;
+                        break;
+                    }
+                }
+                if(board[row + i][col - i] == null)
+                {
+                    nullcount++;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+        if(!border)
+        {
+            border = false;
+            points = 0;
+            nullcount =0;
+        }
+        else
+        {
+            border = false;
+            if(nullcount==0)
+            {
+                tmpPoints += points; 
+            }
+            points = 0;
+        }
+        if(tmpPoints != 0)
+        {
+            tmpPoints += points; 
+            return tmpPoints;
+        }
+        else
+        {
+            return 0;
+        }
+    }
     /// to test
     void test()
     {
