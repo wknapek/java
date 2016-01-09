@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -9,15 +8,13 @@ import java.util.ArrayList;
 
 /**
  *
- * @author dom
+ * @author raven
  */
-class ReversiBoard implements ReversiBoardInterface
+class OtelloHelper implements OtelloHelperInterface
 {
     private int[] move_hor = {-1, -1, -1, 0, 0, 1, 1, 1};
     private int[] move_ver = {-1, 0, 1, -1, 1, -1, 0, 1};
-    private Disk myBoard[][] = new Disk[8][8];
-    private Disk myNextPlayer;
-    boolean movewasexexute;
+    
     class retrev
     {
         boolean validate = false;
@@ -25,9 +22,9 @@ class ReversiBoard implements ReversiBoardInterface
     }
     class myPoint
     {
-        ReversiBoardInterface.Position position;
+        OtelloHelperInterface.Position position;
         int count;
-        public myPoint(int icount, ReversiBoardInterface.Position pos )
+        public myPoint(int icount, OtelloHelperInterface.Position pos )
         {
             count = icount;
             position = pos;
@@ -41,11 +38,34 @@ class ReversiBoard implements ReversiBoardInterface
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    retrev isValidMove(ReversiBoardInterface.Disk[][] board, ReversiBoardInterface.Disk check, int row, int col) 
+
+    ////////////////////////////////////////////////////
+    @Override
+    public Position[] analyze(Disk[][] board, Disk playerDisk)
+    {
+        //Position[] list;
+        //list = new Position[];
+        Disk oppDisk = (playerDisk == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
+        ArrayList<myPoint> array = findValidMove(board, playerDisk);
+        int listsize = array.size();
+        Position[] list = new Position[listsize];
+        for (int i=0; i < array.size(); ++i) 
+        {
+            array.get(i).count = findPoints(board, array.get(i).position.getIndex1(), array.get(i).position.getIndex2(), playerDisk);
+        }
+        bubbleSort(array);
+        for(int i =0; i < listsize; i++)
+        {
+            list[i] = array.get(i).position;
+        }
+        
+        return list;
+    }
+    
+    retrev isValidMove(Disk[][] board, Disk check, int row, int col) 
     {
         retrev ret = new retrev();
-        ReversiBoardInterface.Disk oppDisk = (check == ReversiBoardInterface.Disk.BLACK) ? ReversiBoardInterface.Disk.WHITE : ReversiBoardInterface.Disk.BLACK;
+        Disk oppDisk = (check == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
         // check 8 directions
         for (int i = 0; i < 8; ++i) 
         {
@@ -80,9 +100,10 @@ class ReversiBoard implements ReversiBoardInterface
 
         return ret;
    }
-
-    ArrayList<myPoint> findValidMove(ReversiBoardInterface.Disk[][] board, ReversiBoardInterface.Disk playerDisk) 
+    
+    ArrayList<myPoint> findValidMove(Disk[][] board, Disk playerDisk) 
     {
+        Disk suggestPiece = (playerDisk == Disk.BLACK) ? Disk.BLACK : Disk.WHITE;
         boolean test =false;
         int count = 0;
 
@@ -92,10 +113,11 @@ class ReversiBoard implements ReversiBoardInterface
             for (int j = 0; j < 8; ++j) 
             {
                 retrev isValid = isValidMove(board,playerDisk, i, j);
-                if (isValid.validate)
+                if (isValid.validate )
                 {
-                    myPoint tmp = new myPoint(isValid.hints, new ReversiBoardInterface.Position(i, j));
+                    myPoint tmp = new myPoint(isValid.hints, new Position(i, j));
                     moveMap.add(tmp);
+                    System.out.println(isValid.hints);
                 }
             }
         }
@@ -122,141 +144,7 @@ class ReversiBoard implements ReversiBoardInterface
         }
         return a;
     }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    @Override
-    public void setGameState(Disk[][] board, Disk nextPlayer) 
-    {
-        for (int i = 0; i < 8; ++i)
-        {
-            for (int j = 0; j < 8; ++j) 
-            {
-                myBoard[i][j] = board[i][j];
-            }
-        }
-        myNextPlayer = nextPlayer;
-        movewasexexute = false;
-    }
-
-    @Override
-    public boolean canWeContinueTheGame() 
-    {
-        ArrayList<myPoint> black = new ArrayList<>();
-        ArrayList<myPoint> white = new ArrayList<>();
-        black = findValidMove(myBoard, Disk.BLACK);
-        white = findValidMove(myBoard, Disk.WHITE);
-        if(black.isEmpty() && white.isEmpty())
-        {
-            try 
-            {
-                throw new CanNotContinue();
-            } 
-            catch (CanNotContinue ex) 
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    @Override
-    public Disk nextPlayer() throws CanNotContinue 
-    {
-        Disk ret = null;
-        if(canWeContinueTheGame())
-        {
-            if(movewasexexute)
-            {
-                if(myNextPlayer == Disk.BLACK)
-                {
-                    ret = Disk.WHITE;
-                }
-                else
-                {
-                    ret = Disk.BLACK;
-                }
-            }
-            else
-            {
-                ret = myNextPlayer;
-            }
-        }
-        if(ret == null)
-        {
-            throw new CanNotContinue();
-        }
-        else
-        {
-            return ret;
-        }
-    }
-
-    @Override
-    public int move(Position pos) throws IllegalMove 
-    {
-        int ret =0;
-        movewasexexute = true;
-        retrev validMove;
-        try {
-            validMove = isValidMove(myBoard, nextPlayer(), pos.getIndex1(), pos.getIndex2());
-            if(!validMove.validate)
-                {
-                    throw new IllegalMove();
-                }
-        } 
-        catch (CanNotContinue ex) 
-        {
-        }
-        try {
-            ArrayList<myPoint> array = findValidMove(myBoard, nextPlayer());
-            for (int i=0; i < array.size(); ++i) 
-            {
-                array.get(i).count = findPoints(myBoard, array.get(i).position.getIndex1(), array.get(i).position.getIndex2(), nextPlayer());
-            }
-            for(int i =0; i < array.size(); i++)
-            {
-                if(array.get(i).position.getIndex1() == pos.getIndex1() && array.get(i).position.getIndex2() == pos.getIndex2())
-                {
-                    ret = array.get(i).count;
-                }
-            }
-        } catch (CanNotContinue ex) 
-        {
-            throw new IllegalMove();
-        }
-        if(ret == 0)
-        {
-            throw new IllegalMove();
-        }
-        return ret;
-        
-    }
-
-    @Override
-    public Disk[][] getBoard() 
-    {
-        return myBoard;
-    }
-
-    @Override
-    public int getResult(Disk player) 
-    {
-       int ret = 0;
-       for (int i = 0; i < 8; ++i)
-        {
-            for (int j = 0; j < 8; ++j) 
-            {
-                if(myBoard[i][j] == player)
-                {
-                    ret++;
-                }
-            }
-        }
-       return ret;
-    }
-
+    
     int findPoints(Disk[][] board ,int row, int col, Disk player)
     {
         Disk oppDisk = (player == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
@@ -559,5 +447,9 @@ class ReversiBoard implements ReversiBoardInterface
             return 0;
         }
     }
-    ////////////////////////////////////////////////////
+    /// to test
+    void test()
+    {
+
+    }
 }
