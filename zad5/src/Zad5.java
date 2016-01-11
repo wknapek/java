@@ -33,6 +33,9 @@ public class Zad5
         myList = tmp.getItems("dupa");
         int tmp1;
         tmp1 = tmp.getUniqItemId("test1", "dupa");
+        ToDoListsInterface.ItemState tmp2;
+        tmp.checkItem(1);
+        tmp2 = tmp.getItemState(1);
     }
     
 }

@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -116,13 +117,45 @@ public class ToDoLists implements ToDoListsInterface
     @Override
     public ItemState getItemState(Integer itemID) throws DoesNotExistException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ItemState tmp = null;
+        List<listElem> mylist;
+        Iterator<Entry<String,List<listElem>>> iterator = myMap.entrySet().iterator();
+        while(iterator.hasNext())
+        {
+            Entry myEntry = (Entry) iterator.next();
+            mylist = (List<listElem>) myEntry.getValue();
+            for(int i =0 ;i < mylist.size();i++)
+            {
+                if(mylist.get(i).Iditem == itemID)
+                {
+                    tmp = mylist.get(i).State;
+                }
+            }
+        }
+        if(tmp == null)
+        {
+            throw new DoesNotExistException();
+        }
+        return tmp;
     }
 
     @Override
     public void checkItem(Integer itemID) throws DoesNotExistException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<listElem> mylist;
+        Iterator<Entry<String,List<listElem>>> iterator = myMap.entrySet().iterator();
+        while(iterator.hasNext())
+        {
+            Entry myEntry = (Entry) iterator.next();
+            mylist = (List<listElem>) myEntry.getValue();
+            for(int i =0 ;i < mylist.size();i++)
+            {
+                if(mylist.get(i).Iditem == itemID)
+                {
+                    mylist.get(i).State = ItemState.CHECKED;
+                }
+            }
+        }
     }
     
 }
