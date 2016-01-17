@@ -141,16 +141,15 @@ public class ToDoLists implements ToDoListsInterface
         return Id;
     }
 
-    @Override
+    @Override 
     public ItemState getItemState(Integer itemID) throws DoesNotExistException
     {
         ItemState tmp = null;
         List<listElem> mylist;
-        Iterator<Entry<String,List<listElem>>> iterator = myMap.entrySet().iterator();
-        while(iterator.hasNext())
+        for(Map.Entry<String, List<listElem>> entry : myMap.entrySet())
         {
-            Entry myEntry = (Entry) iterator.next();
-            mylist = (List<listElem>) myEntry.getValue();
+            //Entry myEntry = (Entry) iterator.next();
+            mylist = entry.getValue();//(List<listElem>) myEntry.getValue();
             for(int i =0 ;i < mylist.size();i++)
             {
                 if(mylist.get(i).Iditem == itemID)
@@ -170,11 +169,10 @@ public class ToDoLists implements ToDoListsInterface
     public void checkItem(Integer itemID) throws DoesNotExistException
     {
         List<listElem> mylist;
-        Iterator<Entry<String,List<listElem>>> iterator = myMap.entrySet().iterator();
-        while(iterator.hasNext())
+        for(Map.Entry<String, List<listElem>> entry : myMap.entrySet())
         {
-            Entry myEntry = (Entry) iterator.next();
-            mylist = (List<listElem>) myEntry.getValue();
+            //Entry myEntry = (Entry) iterator.next();
+            mylist = entry.getValue();//(List<listElem>) myEntry.getValue();
             for(int i =0 ;i < mylist.size();i++)
             {
                 if(mylist.get(i).Iditem == itemID)
