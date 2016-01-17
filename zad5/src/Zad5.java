@@ -24,8 +24,12 @@ public class Zad5
     {
         ToDoLists tmp = new ToDoLists();
         tmp.createToDoList("dupa");
+        //tmp.createToDoList("dupa");
         tmp.addItemToList("test1", "dupa");
+        //tmp.addItemToList("test1", "dupa");
+        //tmp.addItemToList("test1", "dupa5");
         tmp.addItemToList("test2", "dupa");
+        
         tmp.createToDoList("dupa2");
         Set<String> myset = new TreeSet<>();
         myset = tmp.getLists();
@@ -36,6 +40,12 @@ public class Zad5
         ToDoListsInterface.ItemState tmp2;
         tmp.checkItem(1);
         tmp2 = tmp.getItemState(1);
+        ToDoLists tmp4 = new ToDoLists();
+        tmp4.createToDoList("dupa");
+        tmp4.addItemToList("test1", "dupa");
+        tmp2 = tmp4.getItemState(2);
+        tmp.addItemToList("test2", "dupa2");
+        tmp2 = tmp.getItemState(3);
     }
     
 }

@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,10 +14,34 @@ zad 5 ver1
  *
  * @author raven
  */
+
+class IDCreator 
+{
+   private static IDCreator instance = null;
+   private static int IDcounter = 0;
+   protected IDCreator() 
+   {
+      // Exists only to defeat instantiation.
+   }
+   public static IDCreator getInstance() 
+   {
+      if(instance == null) {
+         instance = new IDCreator();
+      }
+      return instance;
+   }
+   public int getID()
+   {
+       return IDcounter++;
+   }
+}
+
+
 public class ToDoLists implements ToDoListsInterface
 {
     private Map<String ,List<listElem>> myMap = new TreeMap<>();
     private static int counter = 0;
+    private IDCreator creatorID = IDCreator.getInstance();
     static synchronized int getID()
     {
         return counter++;
@@ -32,19 +55,23 @@ public class ToDoLists implements ToDoListsInterface
 
         listElem()
         {
-            this.Iditem = getID();
+            this.Iditem = creatorID.getID();//getID();
             this.State = ItemState.UNCHECKED;
         }
         listElem(String item)
         {
             this.Item = item;
-            this.Iditem = getID();
+            this.Iditem = creatorID.getID();//getID();
             this.State = ItemState.UNCHECKED;
         }
     }
     @Override
     public void createToDoList(String name) throws AlreadyExistsException
     {
+        if(myMap.containsKey(name))
+        {
+            throw new AlreadyExistsException();
+        }
         myMap.put(name, new ArrayList<listElem>());
     }
 
@@ -102,7 +129,7 @@ public class ToDoLists implements ToDoListsInterface
         myList = myMap.get(listName);
         for(int i = 0; i < myList.size();i++)
         {
-            if(myList.get(i).Item==itemName)
+            if(myList.get(i).Item == itemName)
             {
                 Id = myList.get(i).Iditem;
             }
