@@ -6,17 +6,22 @@
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
-class BetterOtelloHelper implements BetterOtelloHelperInterface
+public class BetterOtelloHelper implements BetterOtelloHelperInterface
 {
     private int[] move_hor = {-1, -1, -1, 0, 0, 1, 1, 1};
     private int[] move_ver = {-1, 0, 1, -1, 1, -1, 0, 1};
     private Disk originalBoard[][] = new Disk[8][8];
+    private Set<List<myPoint>> treepath;
+    private int score = 0;
     class retrev
     {
         boolean validate = false;
@@ -39,10 +44,19 @@ class BetterOtelloHelper implements BetterOtelloHelperInterface
         {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+        
     }
 
     ////////////////////////////////////////////////////
-    
+    void setpaths(Set<List<myPoint>> paths)
+    {
+        treepath = null;
+        treepath = new HashSet<>(paths);
+    }
+    void setScore(int i)
+    {
+        score = i;
+    }
     retrev isValidMove(Disk[][] board, Disk check, int row, int col) 
     {
         retrev ret = new retrev();
@@ -106,30 +120,23 @@ class BetterOtelloHelper implements BetterOtelloHelperInterface
         }
        return moveMap;
     }
-    public ArrayList<myPoint> bubbleSort(ArrayList<myPoint> a) 
+    public Map<Integer, Set<List<Position>>> mapSort(Map<Integer, Set<List<Position>>> myMap) 
     {
-        for (int i = 0; i < a.size()-1; i++) {
-            for (int j = 1; j < a.size() - i; j++) 
-            {
-                int tmp1 = a.get(j-1).count;
-                int tmp2 = a.get(j).count;
-                if ( tmp1 < tmp2) {
-                    myPoint temp = new myPoint(a.get(j - 1).count,a.get(j - 1).position);
-                    //temp = a.get(j - 1);
-                    a.get(j -1 ).count = a.get(j).count;
-                    a.get(j -1 ).position = a.get(j).position;
-                    int tmpint = temp.count;
-                    a.get(j).count = tmpint;
-                    a.get(j).position = temp.position;
-                }
-            }
-        }
-        return a;
+        List<Integer> keys = new LinkedList<Integer>(myMap.keySet());
+        Collections.sort(keys);
+        Collections.reverse(keys);
+        Map<Integer,Set<List<Position>>> sortedMap = new LinkedHashMap<Integer,Set<List<Position>>>();
+        keys.stream().forEach((key) ->
+        {
+            sortedMap.put(key, myMap.get(key));
+        });
+        return sortedMap;
     }
     
     public Disk[][] effectMove(Disk[][] board, Disk piece, int row, int col) 
     {
     board[row][col] = piece;
+    int points =0 ;
     // check 8 directions
     for (int i = 0; i < 8; ++i) {
             int curRow = row + move_hor[i];
@@ -150,6 +157,7 @@ class BetterOtelloHelper implements BetterOtelloHelperInterface
                             while (effectPieceRow != curRow || effectPieceCol != curCol)
                             {
                                     board[effectPieceRow][effectPieceCol] = piece;
+                                    points++;
                                     effectPieceRow += move_hor[i];
                                     effectPieceCol += move_ver[i];
                             }
@@ -161,11 +169,11 @@ class BetterOtelloHelper implements BetterOtelloHelperInterface
                     curCol += move_ver[i];
             }
     }
-
+    setScore(points);
     return board;
     }
     
-        int findPoints(Disk[][] board ,int row, int col, Disk player)
+    int findPoints(Disk[][] board ,int row, int col, Disk player)
     {
         Disk oppDisk = (player == Disk.BLACK) ? Disk.WHITE : Disk.BLACK;
         int points =0;
@@ -495,51 +503,114 @@ class BetterOtelloHelper implements BetterOtelloHelperInterface
     {
 
     }
+    
+    List<myPoint> checkContinue(Disk[][] board, Disk playerDisk, myPoint poz)
+    {
+        Set<List<myPoint>> mySet = new HashSet<>();
+        setOriginalBoard(board);
+        board = effectMove(board, playerDisk,poz.position.getIndex1(), poz.position.getIndex2());
+        if(poz.count != score);
+        {
+            poz.count = score;
+        }
+        Disk[][] tmpboard = prepareTmpBoard(board);
+        List<myPoint> tmplist= new ArrayList<>();
+        List<myPoint> Final= new LinkedList<>();
+        Final.add(poz);
+        Disk suggestPiece = (playerDisk == Disk.BLACK) ?  Disk.WHITE : Disk.BLACK;
+        tmplist = findValidMove(board, suggestPiece);
+        if(tmplist.isEmpty())
+        {
+           tmplist = findValidMove(tmpboard, playerDisk);
+           if(!tmplist.isEmpty())
+           {
+               for(int i =0; i< tmplist.size(); i++)
+               {
+                   List<myPoint> tmplist2  = checkContinue(tmpboard, playerDisk, tmplist.get(i));
+                   Final = new LinkedList<>();
+                   Final.add(poz);
+                   for(int j =0; j <tmplist2.size();j++)
+                   {
+                       Final.add(tmplist2.get(j));
+                   }
+                   mySet.add(new LinkedList<>(Final));
+                   tmpboard = prepareTmpBoard(originalBoard);
+               }
+           }
+        }
+        if(mySet.isEmpty())
+        {
+            mySet.add(Final);
+        }
+        setpaths(mySet);
+        return Final;
+    }
+    
+    int calculatepoints(List<myPoint> tmplist)
+    {
+        int wynik =0;
+        for(int i = 0; i < tmplist.size(); i++)
+        {
+            wynik+=tmplist.get(i).count;
+        }
+        return wynik;
+    }
     ////////////////////////////////////////////////////////////////////////
     @Override
     public Map<Integer, Set<List<Position>>> analyze(Disk[][] board, Disk playerDisk) 
     {
-        ArrayList<myPoint> array = findValidMove(board, playerDisk);
-        Disk oppPiece = (playerDisk == Disk.BLACK) ? Disk.BLACK : Disk.WHITE;
         setOriginalBoard(board);
+        ArrayList<myPoint> array = findValidMove(board, playerDisk);
+        Disk oppPiece ;
+        if(playerDisk == Disk.BLACK)
+        {
+            oppPiece = Disk.WHITE;
+        }
+        else
+        {
+            oppPiece = Disk.BLACK;
+        }
+            //setOriginalBoard(board);
         Map<Integer, Set<List<Position>>> myMap = new TreeMap<Integer, Set<List<Position>>>();
-        Disk myboard[][] = prepareTmpBoard(board);
-        array = bubbleSort(array);
         for (int i=0; i < array.size(); ++i) 
         {
             array.get(i).count = findPoints(board, array.get(i).position.getIndex1(), array.get(i).position.getIndex2(), playerDisk);
         }
         for(int j =0; j< array.size();j++)
         {
-            Position tmppos = array.get(j).position;
-            if(myMap.containsKey(array.get(j).count))
+            Disk myboard[][] = prepareTmpBoard(board);
+            List<myPoint> list = new LinkedList<>();
+            checkContinue(myboard, playerDisk, array.get(j));
+            for(List<myPoint> tmp : treepath)
             {
-                Set<List<Position>> mySet = new TreeSet<List<Position>>();
-                myMap.get(array.get(j).count);
-                mySet.iterator().next().add(tmppos);
-                myMap.replace(array.get(j).count, mySet);
+                int tmppoints = calculatepoints(tmp);
+                if(myMap.containsKey(tmppoints))
+                {
+                    List<Position> tmplist = new ArrayList<>();
+                    for(int k =0; k < tmp.size();k++)
+                    {
+                        tmplist.add(tmp.get(k).position);
+                    }
+                    Set<List<Position>> tmpSet = myMap.get(tmppoints);
+                    tmpSet.add(new ArrayList<Position>(tmplist));
+                    myMap.replace(tmppoints, tmpSet);
+                }
+                else
+                {
+                    List<Position> tmplist = new ArrayList<>();
+                    for(int k =0; k < tmp.size();k++)
+                    {
+                        tmplist.add(tmp.get(k).position);
+                    }
+                    Set<List<Position>> tmpset = new HashSet<>();
+                    tmpset.add(tmplist);
+                    myMap.put(tmppoints, tmpset);
+                }
             }
-            Set<List<Position>> mySet = new TreeSet<List<Position>>();
-            List<Position> myList = new ArrayList<>();
-            myList.add(tmppos);
-            mySet.add(myList);
-            myMap.put(array.get(j).count, mySet);
+            //myMap.put(j, v);
+            list.isEmpty();
         }
-        for(int i=0;i<array.size();i++)
-        {
-            myboard = effectMove(board, playerDisk, array.get(i).position.getIndex1(), array.get(i).position.getIndex2());
-            array.removeAll(array);
-            array = findValidMove(myboard, playerDisk);
-            if(array.isEmpty())
-            {
-                break;
-            }
-            else
-            {
-                myMap = analyze(myboard, playerDisk);
-            }
-            myboard = prepareTmpBoard(originalBoard);
-        }
+        myMap = mapSort(myMap);
         return myMap;
     }
     

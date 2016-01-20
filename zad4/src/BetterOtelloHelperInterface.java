@@ -15,7 +15,8 @@ public interface BetterOtelloHelperInterface {
 	 * Typ wyliczeniowy reprezentujacy pionka do gry w Otello.
 	 * 
 	 */
-	enum Disk {
+	enum Disk 
+    {
 		BLACK, WHITE;
 	}
 
