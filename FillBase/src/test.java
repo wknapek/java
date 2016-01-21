@@ -52,31 +52,31 @@ public class test {
     board[3][6] = ReversiBoardInterface.Disk.WHITE;
 
     //board[4][5] = ReversiBoardInterface.Disk.BLACK;
-    
-       ReversiBoard test = new ReversiBoard();
-       test.setGameState(testTab, ReversiBoardInterface.Disk.WHITE);
-       ReversiBoardInterface.Disk tmp = test.nextPlayer();
-       boolean dupa = test.canWeContinueTheGame();
-       int testwynik = test.getResult(ReversiBoardInterface.Disk.WHITE);
-       ReversiBoardInterface.Disk testplayer = test.nextPlayer();
-       ReversiBoardInterface.Position testpos = new ReversiBoardInterface.Position(6,4);
-       testwynik = test.move(testpos);
-       test.setGameState(board, ReversiBoardInterface.Disk.BLACK);
-       System.out.println("Can we continue? " + test.canWeContinueTheGame());
+		Result result = JUnitCore.runClasses(OtelloTester.class);
 
-        try {
-            System.out.println("Next player: " + test.nextPlayer().name());
-        } catch (ReversiBoardInterface.CanNotContinue canNotContinue) {
-            System.out.println("We cannot continue");
-        }
+		PMO_SystemOutRedirect
+				.println("-------------------------------------------");
+		for (Failure failure : result.getFailures()) {
+			PMO_SystemOutRedirect.println("BLAD: " + failure.toString());
+		}
 
-        try {
-            System.out.println("Points for move: " + test.move(new ReversiBoardInterface.Position(7, 2)));
-        } catch (ReversiBoardInterface.IllegalMove illegalMove) {
-            System.out.println("Illegal move!");
-        }
+		PMO_SystemOutRedirect
+				.println("-------------------------------------------");
+		PMO_SystemOutRedirect.println("Liczba wykonanych testow: "
+				+ result.getRunCount() + " testow");
+		PMO_SystemOutRedirect.println("Nie zaliczono...........: "
+				+ result.getFailureCount() + " testow");
 
-        System.out.println("Result: " + test.getResult(ReversiBoardInterface.Disk.BLACK));
+		PMO_SystemOutRedirect
+				.println("-------------------------------------------");
+		if (result.wasSuccessful()) {
+			PMO_SystemOutRedirect
+					.println("Testy zakonczone calkowitym sukcesem");
+		} else {
+			PMO_SystemOutRedirect
+					.println("Nie wszystkie testy zostaly zaliczone");
+		}
+
 
     }
 }

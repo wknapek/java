@@ -1,24 +1,24 @@
 
 public class PMO_OtelloBordGenerator {
-	private OtelloHelperInterface.Disk board[][] = new OtelloHelperInterface.Disk[8][8];
+	private ReversiBoardInterface.Disk board[][] = new ReversiBoardInterface.Disk[8][8];
 	
 	void setBlack( int idx1, int idx2 ) {
-		board[ idx1 ][ idx2 ] = OtelloHelperInterface.Disk.BLACK;
+		board[ idx1 ][ idx2 ] = ReversiBoardInterface.Disk.BLACK;
 	}
 	
-	void setBlack( OtelloHelperInterface.Position pos ) {
+	void setBlack( ReversiBoardInterface.Position pos ) {
 		setBlack( pos.getIndex1(), pos.getIndex2() );
 	}
 	
 	void setWhite( int idx1, int idx2 ) {
-		board[ idx1 ][ idx2 ] = OtelloHelperInterface.Disk.WHITE;
+		board[ idx1 ][ idx2 ] = ReversiBoardInterface.Disk.WHITE;
 	}
 	
-	void setWhite( OtelloHelperInterface.Position pos ) {
+	void setWhite( ReversiBoardInterface.Position pos ) {
 		setWhite( pos.getIndex1(), pos.getIndex2() );
 	}
 	
-	boolean isEmpty( OtelloHelperInterface.Position pos ) {
+	boolean isEmpty( ReversiBoardInterface.Position pos ) {
 		return ( board[ pos.getIndex1()][ pos.getIndex2()] == null );
 	}
 	
@@ -31,8 +31,19 @@ public class PMO_OtelloBordGenerator {
 	
 	private String getDisk( int idx1, int idx2 ) {
 		if ( board[ idx1 ][ idx2 ] == null ) return " .";
-		if ( board[ idx1 ][ idx2 ] == OtelloHelperInterface.Disk.BLACK ) return " *";
+		if ( board[ idx1 ][ idx2 ] == ReversiBoardInterface.Disk.BLACK ) return " *";
 		else return " O";
+	}
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		PMO_OtelloBordGenerator obg = new PMO_OtelloBordGenerator();
+		
+		for ( int i = 0; i < 8; i++ ) 
+			for ( int j = 0; j < 8; j++ )
+				obg.board[i][j] = board[i][j];
+		
+		return obg;
 	}
 	
 	@Override
@@ -51,7 +62,7 @@ public class PMO_OtelloBordGenerator {
 		new PMO_OtelloBordGenerator();
 	}
 	
-	public OtelloHelperInterface.Disk[][] getBoard() {
+	public ReversiBoardInterface.Disk[][] getBoard() {
 		return board;
 	}
 }
