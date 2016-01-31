@@ -22,6 +22,10 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
     private int pointReDo = 0;
     boolean movewasexexute;
     private List<Disk[][]> history;
+    public ReversiBoardExt()
+    {
+        history = new ArrayList<Disk[][]>();
+    }
 
 
     class retrev
@@ -656,6 +660,7 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
         }
         pointUndo--;
         myTmpBoard = history.get(pointUndo);
+        myBoard = myTmpBoard;
     }
 
     @Override
@@ -667,5 +672,6 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
         }
         pointReDo = pointUndo + 1;
         myTmpBoard = history.get(pointReDo);
+        myBoard = myTmpBoard;
     }
 }
