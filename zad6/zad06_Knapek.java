@@ -11,12 +11,13 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
     private Disk myBoard[][] = new Disk[8][8];
     private Disk myTmpBoard[][] = new Disk[8][8];
     private Disk myNextPlayer;
-    private int pointinhistory = 0;
+    private int pointUndo = 0;
+    private int pointReDo = 0;
     boolean movewasexexute;
-    private List<historyPoint> history;
+    private List<Disk[][]> history;
     public ReversiBoardExt()
     {
-        history = new ArrayList<historyPoint>();
+        history = new ArrayList<Disk[][]>();
     }
 
 
@@ -24,17 +25,6 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
     {
         boolean validate = false;
         int hints = 0;
-    }
-    class historyPoint
-    {
-        private Disk player;
-        private ReversiBoardExt.Disk[][] point;
-
-        public historyPoint(ReversiBoardExt.Disk[][] board,Disk play)
-        {
-            player = play;
-            point = board;
-        }
     }
     class myPoint
     {
@@ -187,24 +177,10 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
                 myBoard[i][j] = board[i][j];
             }
         }
-        history.add(new historyPoint(board, nextPlayer));
         myNextPlayer = nextPlayer;
         movewasexexute = false;
     }
-    
-    public void mysetGameState(Disk[][] board, Disk nextPlayer) 
-    {
-        for (int i = 0; i < 8; ++i)
-        {
-            for (int j = 0; j < 8; ++j) 
-            {
-                myBoard[i][j] = board[i][j];
-            }
-        }
-        myNextPlayer = nextPlayer;
-        movewasexexute = false;
-    }
-    
+
     @Override
     public boolean canWeContinueTheGame() 
     {
@@ -235,7 +211,21 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
         Disk ret = null;
         if(canWeContinueTheGame())
         {
-           ret = myNextPlayer;
+            //if(movewasexexute)
+            //{
+                /*if(myNextPlayer == Disk.BLACK)
+                {
+                    ret = Disk.WHITE;
+                }
+                else
+                {
+                    ret = Disk.BLACK;
+                }
+            }
+            else
+            {*/
+                ret = myNextPlayer;
+            //}
         }
         if(ret == null)
         {
@@ -292,22 +282,22 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
         List<myPoint> mylist = findValidMove(myTmpBoard, oppDisk);
         if(mylist.isEmpty())
         {
-            mysetGameState(myTmpBoard, player);
+            setGameState(myTmpBoard, player);
         }
         else
         {
-            mysetGameState(myTmpBoard, oppDisk);
+            setGameState(myTmpBoard, oppDisk);
         }
         if(allin == 0)
         {
-            ret = point_after - point_before -1;   
+             ret = point_after - point_before -1;   
         }
         else
         {
-            ret = point_after - point_before - 1;
+        ret = point_after - point_before - 1;
         }
-        history.add(new historyPoint(myTmpBoard,myNextPlayer));
-        pointinhistory = history.size() - 1;
+        history.add(myTmpBoard);
+        pointUndo = history.size() - 1;
         return ret;
         
     }
@@ -657,26 +647,24 @@ class ReversiBoardExt implements ReversiBoardInterfaceExt
     @Override
     public void undo() throws IllegalOperationException
     {
-        if(pointinhistory <= 0)
+        if(pointUndo > history.size() -1)
         {
             throw new IllegalOperationException();
         }
-        pointinhistory--;
-        myTmpBoard = history.get(pointinhistory).point;
-        myNextPlayer = history.get(pointinhistory).player;
+        pointUndo--;
+        myTmpBoard = history.get(pointUndo);
         myBoard = myTmpBoard;
     }
 
     @Override
     public void redo() throws IllegalOperationException
     {
-        pointinhistory++;
-        if(pointinhistory > history.size() - 1)
+        if(pointReDo < 0)
         {
             throw new IllegalOperationException();
         }
-        myTmpBoard = history.get(pointinhistory).point;
-        myNextPlayer = history.get(pointinhistory).player;
+        pointReDo = pointUndo + 1;
+        myTmpBoard = history.get(pointReDo);
         myBoard = myTmpBoard;
     }
 }

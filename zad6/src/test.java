@@ -52,7 +52,7 @@ public class test {
     board[3][6] = ReversiBoardInterface.Disk.WHITE;
 
     //board[4][5] = ReversiBoardInterface.Disk.BLACK;
-		Result result = JUnitCore.runClasses(OtelloTester.class);
+		Result result = JUnitCore.runClasses(PMO_Tester.class);
 
 		PMO_SystemOutRedirect
 				.println("-------------------------------------------");

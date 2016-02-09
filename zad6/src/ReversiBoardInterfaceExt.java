@@ -1,3 +1,4 @@
+
 public interface ReversiBoardInterfaceExt extends ReversiBoardInterface {
 	
 	class IllegalOperationException extends Exception {
@@ -20,7 +21,7 @@ public interface ReversiBoardInterfaceExt extends ReversiBoardInterface {
 	void undo() throws IllegalOperationException;
 
 	/**
-	 * Realizuje operacje REDO przywracajac kolejny stan planszy. Stan
+	 * Realizuje operację REDO przywracajac kolejny stan planszy. Stan
 	 * zmienia sie o jedno, poprawne posuniecie jednego gracza.
 	 * 
 	 * @throws IllegalOperationException wyjatek zwracany gdy nie mozna sie 
