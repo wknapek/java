@@ -1,8 +1,8 @@
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.JUnitCore;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -22,30 +22,24 @@ public class Zad5
      */
     public static void main(String[] args) throws ToDoListsInterface.AlreadyExistsException, ToDoListsInterface.DoesNotExistException
     {
-        ToDoLists tmp = new ToDoLists();
-        tmp.createToDoList("dupa");
-        //tmp.createToDoList("dupa");
-        tmp.addItemToList("test1", "dupa");
-        //tmp.addItemToList("test1", "dupa");
-        //tmp.addItemToList("test1", "dupa5");
-        tmp.addItemToList("test2", "dupa");
-        
-        tmp.createToDoList("dupa2");
-        Set<String> myset = new TreeSet<>();
-        myset = tmp.getLists();
-        List<String> myList = new ArrayList<>();
-        myList = tmp.getItems("dupa");
-        int tmp1;
-        tmp1 = tmp.getUniqItemId("test1", "dupa");
-        ToDoListsInterface.ItemState tmp2;
-        tmp.checkItem(1);
-        tmp2 = tmp.getItemState(1);
-        ToDoLists tmp4 = new ToDoLists();
-        tmp4.createToDoList("dupa");
-        tmp4.addItemToList("test1", "dupa");
-        tmp2 = tmp4.getItemState(2);
-        tmp.addItemToList("test2", "dupa2");
-        tmp2 = tmp.getItemState(3);
+		Result result = JUnitCore.runClasses(PMO_ToDoTester.class);
+
+		PMO_SystemOutRedirect.println("-------------------------------------------");
+		for (Failure failure : result.getFailures()) {
+			PMO_SystemOutRedirect.println("BLAD: " + failure.toString());
+		}
+
+		PMO_SystemOutRedirect.println("-------------------------------------------");
+		PMO_SystemOutRedirect.println("Wykonano      : " + result.getRunCount()
+				+ " testow");
+		PMO_SystemOutRedirect.println("Nie zaliczono : " + result.getFailureCount()
+				+ " testow");
+
+		PMO_SystemOutRedirect.println("-------------------------------------------");
+		if (result.wasSuccessful()) {
+			PMO_SystemOutRedirect.println("Testy zakonczone calkowitym sukcesem");
+		} else {
+			PMO_SystemOutRedirect.println("Nie wszystkie testy zostaly zaliczone");
+		}
     }
-    
 }

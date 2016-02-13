@@ -1,8 +1,6 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -114,6 +112,10 @@ public class ToDoLists implements ToDoListsInterface
         List<String> myList = new ArrayList<>();
         List<listElem> myItems = new ArrayList<>();
         myItems = myMap.get(listName);
+        if(myItems==null)
+        {
+            throw new DoesNotExistException();
+        }
         for(int i = 0; i < myItems.size(); i++)
         {
             myList.add(myItems.get(i).Item);
@@ -127,6 +129,10 @@ public class ToDoLists implements ToDoListsInterface
         int Id = -1;
         List<listElem> myList = new ArrayList<>();
         myList = myMap.get(listName);
+        if(myList == null)
+        {
+            throw new DoesNotExistException();
+        }
         for(int i = 0; i < myList.size();i++)
         {
             if(myList.get(i).Item == itemName)
@@ -168,18 +174,23 @@ public class ToDoLists implements ToDoListsInterface
     @Override
     public void checkItem(Integer itemID) throws DoesNotExistException
     {
+        boolean gooID = false;
         List<listElem> mylist;
         for(Map.Entry<String, List<listElem>> entry : myMap.entrySet())
         {
-            //Entry myEntry = (Entry) iterator.next();
-            mylist = entry.getValue();//(List<listElem>) myEntry.getValue();
+            mylist = entry.getValue();
             for(int i =0 ;i < mylist.size();i++)
             {
                 if(mylist.get(i).Iditem == itemID)
                 {
                     mylist.get(i).State = ItemState.CHECKED;
+                    gooID = true;
                 }
             }
+        }
+        if(!gooID)
+        {
+            throw new DoesNotExistException();
         }
     }
     
