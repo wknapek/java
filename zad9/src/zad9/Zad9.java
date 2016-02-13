@@ -17,7 +17,16 @@ public class Zad9
      */
     public static void main(String[] args)
     {
-        // TODO code application logic here
+        boolean test = true;
+        for(int i =0; i<10 ;i++)
+        {
+            test &= true;
+            if(i==5)
+            {
+                test &= false;
+            }
+        }
+        System.out.println(test);
     }
     
 }

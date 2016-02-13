@@ -48,21 +48,54 @@ public class ToDoListsExt implements ToDoListsExtInterface
     public
     void connectListToList(String listNameSrc, String listNameDst) throws DoesNotExistException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<listElem> Dest = myMap.get(listNameDst);
+        List<listElem> Src  = myMap.get(listNameSrc);
+        if(Dest == null || Src == null)
+        {
+            throw new DoesNotExistException();
+        }
+        Dest.addAll(Src);
+        myMap.replace(listNameDst, Dest);
     }
 
     @Override
     public
     void uncheckItem(Integer itemID) throws DoesNotExistException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean gooID = false;
+        List<listElem> mylist;
+        for(Map.Entry<String, List<listElem>> entry : myMap.entrySet())
+        {
+            mylist = entry.getValue();
+            for(int i =0 ;i < mylist.size();i++)
+            {
+                if(mylist.get(i).Iditem == itemID)
+                {
+                    mylist.get(i).State = ItemState.UNCHECKED;
+                    gooID = true;
+                }
+            }
+        }
+        if(!gooID)
+        {
+            throw new DoesNotExistException();
+        }
     }
 
     @Override
     public
     boolean allChecked(String listName) throws DoesNotExistException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean all = true;
+        List<listElem> checklist = myMap.get(listName);
+        for(int i =0;i<checklist.size();i++)
+        {
+            if(checklist.get(i).State==ItemState.CHECKED)
+            {
+                all &= true;
+            }
+        }
+        return all;
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
     class listElem
