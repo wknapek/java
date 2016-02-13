@@ -19,6 +19,7 @@ public class Zad8
         SQLiteHelper sqltest = new SQLiteHelper();
         testclass test = new testclass();
         sqltest.createTable(test);
+        sqltest.insert(test);
     }
     
 }

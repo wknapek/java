@@ -20,4 +20,5 @@ public class testclass
     public Float Ftest =2.2f;
     public String stest = "dupa";
     public Boolean Btest = false;
+    private int ptest =1 ;
 }
