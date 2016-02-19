@@ -1,4 +1,3 @@
-
 public interface SQLiteHelperInterface {
 	/**
 	 * Metoda uzywajac refleksji dokonuje inspekcji przekazanego obiektu i generuje

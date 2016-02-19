@@ -35,7 +35,7 @@ public class SQLiteHelper implements SQLiteHelperInterface
     public
     String createTable(Object o)
     {
-        String TableCommand = "CREATE TABLE IF NOT EXISTS";
+        String TableCommand = "CREATE TABLE IF NOT EXISTS ";
         boolean badd = false;
         boolean iladd = false;
         boolean sadd = false;
@@ -43,18 +43,29 @@ public class SQLiteHelper implements SQLiteHelperInterface
         List<cell> cells = new ArrayList<>();
         ClassName = o.getClass().getName();
         TableCommand += ClassName;
-        TableCommand += " (ID INT PRIMARY KEY     NOT NULL ";
+        TableCommand += " ( ";
                 Field[] FieldList = o.getClass().getDeclaredFields();
         for(int i=0;i<FieldList.length;i++)
         {
-            if(Modifier.isPublic(FieldList[i].getModifiers()))
+            if(Modifier.isPublic(FieldList[i].getModifiers()) && (FieldList[i].getType() == Long.class || FieldList[i].getType() == long.class 
+                || FieldList[i].getType() == String.class || FieldList[i].getType() == boolean.class || FieldList[i].getType() == Boolean.class || 
+                FieldList[i].getType() == Integer.class || FieldList[i].getType() == int.class || FieldList[i].getType() == Float.class || FieldList[i].getType() == float.class
+                || FieldList[i].getType() == Double.class || FieldList[i].getType() == double.class))
             {
                 cells.add(new cell(FieldList[i].getName(),FieldList[i].getType()));
             }
         }
+        int i = 0;
         for (cell cell : cells)
-        {          
-            TableCommand +=  ", " + cell.name + " ";
+        {   
+            if(i==0)
+            {
+                TableCommand += cell.name + " ";
+            }
+            else
+            {
+                TableCommand += "," + cell.name + " ";
+            }
             if(cell.type == Integer.class || cell.type == int.class || cell.type ==  Long.class || cell.type == long.class)
             {
                 TableCommand += "INTEGER";
@@ -71,6 +82,7 @@ public class SQLiteHelper implements SQLiteHelperInterface
             {
                 TableCommand += "TEXT";
             }
+            i++;
         }
         TableCommand += ");";
         return TableCommand;
@@ -84,14 +96,19 @@ public class SQLiteHelper implements SQLiteHelperInterface
         InsertString += " VALUES( ";
         Field[] FieldList = o.getClass().getDeclaredFields();
         Class source = o.getClass();
+        boolean added = false;
         for(int i=0;i<FieldList.length;i++)
         {
-            if(Modifier.isPublic(FieldList[i].getModifiers()))
+            if(Modifier.isPublic(FieldList[i].getModifiers()) && (FieldList[i].getType() == Long.class || FieldList[i].getType() == long.class 
+                || FieldList[i].getType() == String.class || FieldList[i].getType() == boolean.class || FieldList[i].getType() == Boolean.class || 
+                FieldList[i].getType() == Integer.class || FieldList[i].getType() == int.class || FieldList[i].getType() == Float.class || FieldList[i].getType() == float.class
+                || FieldList[i].getType() == Double.class || FieldList[i].getType() == double.class))
             {
-                if(i!=0)
+                if(i!=0 && added)
                 {
                     InsertString += " ,";
                 }
+                added =true;
                 if(FieldList[i].getType()==boolean.class || FieldList[i].getType()==Boolean.class)
                 {
                     try {
