@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,7 +7,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /*
-zad 9 ver 3
+zad 9 ver 1
  */
 /**
  *
@@ -41,7 +40,7 @@ public class ToDoListsExt implements ToDoListsExtInterface
     private Map<String ,List<listElem>> myMap = new TreeMap<>();
     private static int counter = 0;
     private IDCreator creatorID = IDCreator.getInstance();
-    private connections conect = new connections();
+    //private List<String> IgnoreList = new ArrayList<>();
     static synchronized int getID()
     {
         return counter++;
@@ -53,18 +52,11 @@ public class ToDoListsExt implements ToDoListsExtInterface
     {
         List<listElem> Dest = myMap.get(listNameDst);
         List<listElem> Src  = myMap.get(listNameSrc);
-        conect.Add(listNameDst, listNameSrc);
-        
         if(Dest == null || Src == null)
         {
             throw new DoesNotExistException();
         }
-        for(int i=0; i < Src.size();i++)
-        {
-            listElem tmp = Src.get(i);
-            tmp.LinkedWith = listNameSrc;
-            Dest.add(Src.get(i));
-        }
+        Dest.addAll(Src);
         myMap.replace(listNameDst, Dest);
         //IgnoreList.add(listNameSrc);
     }
@@ -97,21 +89,13 @@ public class ToDoListsExt implements ToDoListsExtInterface
     public
     boolean allChecked(String listName) throws DoesNotExistException
     {
-        boolean all = false;
+        boolean all = true;
         List<listElem> checklist = myMap.get(listName);
         for(int i =0;i<checklist.size();i++)
         {
             if(checklist.get(i).State==ItemState.CHECKED)
             {
                 all &= true;
-            }
-            else
-            {
-                all = false;
-            }
-            if(checklist.get(i).State==ItemState.CHECKED && all == false)
-            {
-                all = true;
             }
         }
         return all;
@@ -122,8 +106,6 @@ public class ToDoListsExt implements ToDoListsExtInterface
         String      Item;
         int         Iditem;
         ItemState   State;
-        String      FromList;
-        String      LinkedWith;
 
         listElem()
         {
@@ -136,62 +118,7 @@ public class ToDoListsExt implements ToDoListsExtInterface
             this.Iditem = creatorID.getID();//getID();
             this.State = ItemState.UNCHECKED;
         }
-        listElem(String item, String list)
-        {
-            this.Item = item;
-            this.Iditem = creatorID.getID();//getID();
-            this.State = ItemState.UNCHECKED;
-            this.FromList = list;
-        }
-        listElem(String item, String list, String linked)
-        {
-            this.Item = item;
-            this.Iditem = creatorID.getID();//getID();
-            this.State = ItemState.UNCHECKED;
-            this.FromList = list;
-            this.LinkedWith = linked;
-        }
     }
-    class connections
-    {
-        private Map<String,List<String>> conn;
-
-        public connections()
-        {
-            conn = new HashMap<>();
-        }
-        public void Add(String k,String v)
-        {
-            if(conn.containsKey(k))
-            {
-                conn.get(k).add(v);
-            }
-            else
-            {
-                conn.put(k, new ArrayList<String>());
-                conn.get(k).add(v);
-            }
-        }
-        public boolean isConnected(String d,String s)
-        {
-            boolean ret = false;
-            List<String> tmp = conn.get(d);
-            if(tmp == null)
-            {
-                return false;
-            }
-            for(int i = 0 ;i < tmp.size();i++)
-            {
-                if(tmp.get(i)==s)
-                {
-                    ret = true;
-                }
-            }
-            return ret;
-        }
-        
-    }
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void createToDoList(String name) throws AlreadyExistsException
     {
@@ -214,13 +141,13 @@ public class ToDoListsExt implements ToDoListsExtInterface
         {
             for(int i = 0; i <myList.size();i++)
             {
-                if(myList.get(i).Item.equals(itemName) && (myList.get(i).FromList.equals(listName)))
+                if(myList.get(i).Item.equals(itemName))
                 {
                     throw new AlreadyExistsException();
                 }
             }
         }
-        myList.add(new listElem(itemName,listName));
+        myList.add(new listElem(itemName));
         myMap.replace(listName, myList);
     }
 
@@ -247,14 +174,7 @@ public class ToDoListsExt implements ToDoListsExtInterface
         }
         for(int i = 0; i < myItems.size(); i++)
         {
-            if(conect.isConnected(listName,myItems.get(i).FromList))
-            {
-                myList.add(myItems.get(i).Item);
-            }
-            else if(myItems.get(i).FromList == listName)
-            {
-                myList.add(myItems.get(i).Item);
-            }
+            myList.add(myItems.get(i).Item);
         }
         return myList;
     }
